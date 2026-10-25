@@ -26,6 +26,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   PeriodMode _mode = PeriodMode.month;
   DateTime _anchor = today();
   bool _monthByWeek = true;
+  final _scroll = ScrollController();
+  bool _scrolled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // status bar background once the gradient header has scrolled away
+    _scroll.addListener(() {
+      final scrolled = _scroll.offset > 120;
+      if (scrolled != _scrolled) setState(() => _scrolled = scrolled);
+    });
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
 
   DayRange get _range => periodRange(_mode, _anchor);
 
@@ -47,100 +65,125 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final isCurrent = range.contains(today());
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: _Header(
-              mode: _mode,
-              label: _periodLabel,
-              totals: rows == null ? null : Totals.of(rows),
-              onMode: (m) => setState(() => _mode = m),
-              onPrev: () => _shift(-1),
-              onNext: () => _shift(1),
-              onToday: isCurrent ? null : () => setState(() => _anchor = today()),
+      body: Stack(
+        children: [
+          CustomScrollView(
+            controller: _scroll,
+            slivers: [
+              SliverToBoxAdapter(
+                child: _Header(
+                  mode: _mode,
+                  label: _periodLabel,
+                  totals: rows == null ? null : Totals.of(rows),
+                  onMode: (m) => setState(() => _mode = m),
+                  onPrev: () => _shift(-1),
+                  onNext: () => _shift(1),
+                  onToday: isCurrent ? null : () => setState(() => _anchor = today()),
+                ),
+              ),
+              if (rows != null) ...[
+                SliverToBoxAdapter(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 16, 16, 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Ausgaben nach Kategorie',
+                                    style: Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                ),
+                                if (_mode == PeriodMode.month)
+                                  SegmentedButton<bool>(
+                                    style: const ButtonStyle(visualDensity: VisualDensity.compact),
+                                    showSelectedIcon: false,
+                                    segments: const [
+                                      ButtonSegment(value: true, label: Text('Wochen')),
+                                      ButtonSegment(value: false, label: Text('Tage')),
+                                    ],
+                                    selected: {_monthByWeek},
+                                    onSelectionChanged: (s) => setState(() => _monthByWeek = s.first),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            height: 220,
+                            child: StackedExpenseChart(
+                              categories: categories,
+                              buckets: fillExpenses(
+                                _mode == PeriodMode.week
+                                    ? dayBuckets(range, weekdayLabels: true)
+                                    : (_monthByWeek ? weekBuckets(range) : dayBuckets(range, weekdayLabels: false)),
+                                rows,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                ..._breakdown(context, rows, EntryKind.expense, range),
+                ..._breakdown(context, rows, EntryKind.income, range),
+              ],
+              if (history != null)
+                SliverToBoxAdapter(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 16, 16, 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Text(
+                              'Einnahmen und Ausgaben – $_historyMonths Monate',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Row(
+                              children: [
+                                _Legend(color: context.cash.income, text: 'Einnahmen'),
+                                const SizedBox(width: 16),
+                                _Legend(color: context.cash.expense, text: 'Ausgaben'),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            height: 200,
+                            child: IncomeExpenseChart(months: monthlyTotals(history, range.to, _historyMonths)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              const SliverToBoxAdapter(child: SizedBox(height: 120)),
+            ],
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: MediaQuery.paddingOf(context).top,
+            child: AnimatedOpacity(
+              opacity: _scrolled ? 1 : 0,
+              duration: const Duration(milliseconds: 200),
+              child: ColoredBox(color: Theme.of(context).colorScheme.surface),
             ),
           ),
-          if (rows != null) ...[
-            SliverToBoxAdapter(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 16, 16, 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: Row(
-                          children: [
-                            Expanded(child: Text('Ausgaben nach Kategorie', style: Theme.of(context).textTheme.titleMedium)),
-                            if (_mode == PeriodMode.month)
-                              SegmentedButton<bool>(
-                                style: const ButtonStyle(visualDensity: VisualDensity.compact),
-                                showSelectedIcon: false,
-                                segments: const [
-                                  ButtonSegment(value: true, label: Text('Wochen')),
-                                  ButtonSegment(value: false, label: Text('Tage')),
-                                ],
-                                selected: {_monthByWeek},
-                                onSelectionChanged: (s) => setState(() => _monthByWeek = s.first),
-                              ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        height: 220,
-                        child: StackedExpenseChart(
-                          categories: categories,
-                          buckets: fillExpenses(
-                            _mode == PeriodMode.week
-                                ? dayBuckets(range, weekdayLabels: true)
-                                : (_monthByWeek ? weekBuckets(range) : dayBuckets(range, weekdayLabels: false)),
-                            rows,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            ..._breakdown(context, rows, EntryKind.expense, range),
-            ..._breakdown(context, rows, EntryKind.income, range),
-          ],
-          if (history != null)
-            SliverToBoxAdapter(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 16, 16, 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: Text('Einnahmen und Ausgaben – $_historyMonths Monate',
-                            style: Theme.of(context).textTheme.titleMedium),
-                      ),
-                      const SizedBox(height: 4),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: Row(children: [
-                          _Legend(color: context.cash.income, text: 'Einnahmen'),
-                          const SizedBox(width: 16),
-                          _Legend(color: context.cash.expense, text: 'Ausgaben'),
-                        ]),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        height: 200,
-                        child: IncomeExpenseChart(months: monthlyTotals(history, range.to, _historyMonths)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          const SliverToBoxAdapter(child: SizedBox(height: 120)),
         ],
       ),
     );
@@ -153,18 +196,23 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       SliverToBoxAdapter(child: SectionTitle(kind.plural)),
       if (list.isEmpty)
         const SliverToBoxAdapter(
-          child: Padding(padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8), child: Text('Keine Ausgaben in diesem Zeitraum.')),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Text('Keine Ausgaben in diesem Zeitraum.'),
+          ),
         ),
       SliverList.builder(
         itemCount: list.length,
         itemBuilder: (context, i) => _ShareTile(
           share: list[i],
-          onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
-            builder: (_) => BookingsScreen(
-              title: '${list[i].category.name} · $_periodLabel',
-              initial: BookingQuery(range: range, categoryId: list[i].category.id),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => BookingsScreen(
+                title: '${list[i].category.name} · $_periodLabel',
+                initial: BookingQuery(range: range, categoryId: list[i].category.id),
+              ),
             ),
-          )),
+          ),
         ),
       ),
     ];
@@ -211,7 +259,9 @@ class _Header extends StatelessWidget {
                 child: Image.asset('assets/branding/mascot.png', width: 36, height: 36),
               ),
               const SizedBox(width: 10),
-              Expanded(child: Text('CashBandit', style: text.titleLarge?.copyWith(color: white))),
+              Expanded(
+                child: Text('CashBandit', style: text.titleLarge?.copyWith(color: white)),
+              ),
               SegmentedButton<PeriodMode>(
                 style: SegmentedButton.styleFrom(
                   foregroundColor: white,
@@ -233,17 +283,30 @@ class _Header extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              IconButton(onPressed: onPrev, tooltip: 'Zurück', icon: const Icon(Icons.chevron_left, color: white)),
+              IconButton(
+                onPressed: onPrev,
+                tooltip: 'Zurück',
+                icon: const Icon(Icons.chevron_left, color: white),
+              ),
               Expanded(
                 child: GestureDetector(
                   onTap: onToday,
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 200),
-                    child: Text(label, key: ValueKey(label), textAlign: TextAlign.center, style: text.titleMedium?.copyWith(color: white)),
+                    child: Text(
+                      label,
+                      key: ValueKey(label),
+                      textAlign: TextAlign.center,
+                      style: text.titleMedium?.copyWith(color: white),
+                    ),
                   ),
                 ),
               ),
-              IconButton(onPressed: onNext, tooltip: 'Weiter', icon: const Icon(Icons.chevron_right, color: white)),
+              IconButton(
+                onPressed: onNext,
+                tooltip: 'Weiter',
+                icon: const Icon(Icons.chevron_right, color: white),
+              ),
             ],
           ),
           if (onToday != null)
@@ -262,9 +325,13 @@ class _Header extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              Expanded(child: _Pill(icon: Icons.south_west, label: 'Einnahmen', cents: t?.income ?? 0)),
+              Expanded(
+                child: _Pill(icon: Icons.south_west, label: 'Einnahmen', cents: t?.income ?? 0),
+              ),
               const SizedBox(width: 12),
-              Expanded(child: _Pill(icon: Icons.north_east, label: 'Ausgaben', cents: t?.expense ?? 0)),
+              Expanded(
+                child: _Pill(icon: Icons.north_east, label: 'Ausgaben', cents: t?.expense ?? 0),
+              ),
             ],
           ),
         ],
@@ -281,31 +348,31 @@ class _Pill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(18)),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.white, size: 20),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: _AnimatedAmount(
-                      cents: cents,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16),
-                    ),
-                  ),
-                ],
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(18)),
+    child: Row(
+      children: [
+        Icon(icon, color: Colors.white, size: 20),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: _AnimatedAmount(
+                  cents: cents,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      );
+      ],
+    ),
+  );
 }
 
 /// Counts smoothly to a new amount.
@@ -317,14 +384,14 @@ class _AnimatedAmount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TweenAnimationBuilder<double>(
-        tween: Tween(end: cents.toDouble()),
-        duration: const Duration(milliseconds: 450),
-        curve: Curves.easeOutCubic,
-        builder: (context, v, _) => Text(
-          formatCents(v.round(), signed: signed),
-          style: style.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
-        ),
-      );
+    tween: Tween(end: cents.toDouble()),
+    duration: const Duration(milliseconds: 450),
+    curve: Curves.easeOutCubic,
+    builder: (context, v, _) => Text(
+      formatCents(v.round(), signed: signed),
+      style: style.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
+    ),
+  );
 }
 
 class _ShareTile extends StatelessWidget {
@@ -402,9 +469,15 @@ class _Legend extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => Row(children: [
-        Container(width: 10, height: 10, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(3))),
-        const SizedBox(width: 6),
-        Text(text, style: Theme.of(context).textTheme.labelMedium),
-      ]);
+  Widget build(BuildContext context) => Row(
+    children: [
+      Container(
+        width: 10,
+        height: 10,
+        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(3)),
+      ),
+      const SizedBox(width: 6),
+      Text(text, style: Theme.of(context).textTheme.labelMedium),
+    ],
+  );
 }

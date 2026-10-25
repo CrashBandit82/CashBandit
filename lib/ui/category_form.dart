@@ -131,7 +131,7 @@ class _CategoryFormState extends ConsumerState<CategoryForm> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
             Center(
               child: AnimatedSwitcher(
@@ -205,12 +205,7 @@ class _CategoryFormState extends ConsumerState<CategoryForm> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'save-category',
-        onPressed: _save,
-        icon: const Icon(Icons.check),
-        label: const Text('Speichern'),
-      ),
+      bottomNavigationBar: SaveBar(onPressed: _save),
     );
   }
 }

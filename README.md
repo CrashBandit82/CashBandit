@@ -32,7 +32,23 @@ CashBandit ist ein buntes, einfaches Kassabuch: Einnahmen und Ausgaben erfassen,
 
 ### Screenshots
 
-*Folgen.* (`fastlane/metadata/android/de-DE/images/phoneScreenshots/`)
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="230" alt="Übersicht">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="230" alt="Ausgaben nach Kategorie">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="230" alt="12-Monats-Vergleich">
+</p>
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width="230" alt="Buchungen">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" width="230" alt="Neue Buchung">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" width="230" alt="Wiederkehrende Buchungen">
+</p>
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/7.png" width="230" alt="Kategorien">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/8.png" width="230" alt="Heller Modus">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/9.png" width="230" alt="Einstellungen">
+</p>
+
+<sub>Screenshots mit Beispieldaten.</sub>
 
 ### Bauen
 
@@ -77,7 +93,23 @@ CashBandit is a colorful, simple cash book: record income and expenses, analyze 
 
 ### Screenshots
 
-*Coming soon.*
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="230" alt="Overview">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="230" alt="Expenses by category">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="230" alt="12-month comparison">
+</p>
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width="230" alt="Bookings">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" width="230" alt="New booking">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" width="230" alt="Recurring bookings">
+</p>
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/7.png" width="230" alt="Categories">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/8.png" width="230" alt="Light mode">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/9.png" width="230" alt="Settings">
+</p>
+
+<sub>Screenshots with sample data.</sub>
 
 ### Build
 

@@ -134,3 +134,17 @@ class SectionTitle extends StatelessWidget {
         ),
       );
 }
+
+/// Full-width save button pinned below a form (never covers form fields).
+class SaveBar extends StatelessWidget {
+  const SaveBar({super.key, required this.onPressed});
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          child: FilledButton.icon(onPressed: onPressed, icon: const Icon(Icons.check), label: const Text('Speichern')),
+        ),
+      );
+}

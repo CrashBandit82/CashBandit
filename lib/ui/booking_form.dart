@@ -124,7 +124,7 @@ class _BookingFormState extends ConsumerState<BookingForm> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
             SegmentedButton<EntryKind>(
               segments: const [
@@ -224,12 +224,7 @@ class _BookingFormState extends ConsumerState<BookingForm> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'save',
-        onPressed: _saving ? null : _save,
-        icon: const Icon(Icons.check),
-        label: const Text('Speichern'),
-      ),
+      bottomNavigationBar: SaveBar(onPressed: _saving ? null : _save),
     );
   }
 }

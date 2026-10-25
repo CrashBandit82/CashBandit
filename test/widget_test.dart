@@ -65,7 +65,7 @@ void main() {
     await settle();
     expect(find.text('Wocheneinkauf'), findsOneWidget);
 
-    await tester.tap(find.text('Wiederkehrend').last);
+    await tester.tap(find.text('Regelmäßig').last);
     await settle();
     expect(find.textContaining('Noch keine wiederkehrenden'), findsOneWidget);
 

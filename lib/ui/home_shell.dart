@@ -24,11 +24,12 @@ class _HomeShellState extends State<HomeShell> {
         children: const [DashboardScreen(), BookingsScreen(), RecurringScreen(), SettingsScreen()],
       ),
       floatingActionButton: _tab < 2
-          ? FloatingActionButton.large(
+          ? FloatingActionButton.extended(
               heroTag: 'add',
               tooltip: 'Neue Buchung',
               onPressed: () => openBookingForm(context),
-              child: const Icon(Icons.add, size: 40),
+              icon: const Icon(Icons.add, size: 28),
+              label: const Text('Buchung', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
             )
           : null,
       bottomNavigationBar: NavigationBar(
@@ -41,7 +42,7 @@ class _HomeShellState extends State<HomeShell> {
             selectedIcon: Icon(Icons.receipt_long),
             label: 'Buchungen',
           ),
-          NavigationDestination(icon: Icon(Icons.repeat), selectedIcon: Icon(Icons.repeat_on), label: 'Wiederkehrend'),
+          NavigationDestination(icon: Icon(Icons.repeat), selectedIcon: Icon(Icons.repeat_on), label: 'Regelmäßig'),
           NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Einstellungen'),
         ],
       ),

@@ -8,6 +8,7 @@ import '../data/recurring_runner.dart';
 import '../data/repository.dart';
 import '../providers.dart';
 import 'booking_form.dart';
+import 'theme.dart';
 import 'widgets.dart';
 
 String scheduleText(RecurringRule r) {
@@ -31,13 +32,13 @@ class RecurringScreen extends ConsumerWidget {
       ),
       body: switch (rules) {
         AsyncData(value: final list) when list.isEmpty => const EmptyHint(
-            icon: Icons.repeat,
-            text: 'Noch keine wiederkehrenden Buchungen.\nBeim Anlegen einer Buchung „Wiederkehrend“ einschalten.',
-          ),
+          icon: Icons.repeat,
+          text: 'Noch keine wiederkehrenden Buchungen.\nBeim Anlegen einer Buchung „Wiederkehrend“ einschalten.',
+        ),
         AsyncData(value: final list) => ListView(
-            padding: const EdgeInsets.only(top: 4, bottom: 96),
-            children: [for (final r in list) _RuleCard(r)],
-          ),
+          padding: const EdgeInsets.only(top: 4, bottom: 96),
+          children: [for (final r in list) _RuleCard(r)],
+        ),
         AsyncError(:final error) => Center(child: Text('Fehler: $error')),
         _ => const Center(child: CircularProgressIndicator()),
       },
@@ -56,47 +57,73 @@ class _RuleCard extends ConsumerWidget {
     final status = r.paused
         ? 'pausiert'
         : next == null
-            ? 'beendet'
-            : 'nächste: ${shortDayFormat.format(next)}';
+        ? 'beendet'
+        : 'nächste: ${shortDayFormat.format(next)}';
     final repo = ref.read(repoProvider);
     return Opacity(
       opacity: r.paused || next == null ? 0.6 : 1,
       child: Card(
-        child: ListTile(
-          contentPadding: const EdgeInsets.fromLTRB(16, 6, 4, 6),
-          leading: CategoryAvatar.of(row.category),
-          title: Text(r.note.isEmpty ? row.category.name : r.note, maxLines: 1, overflow: TextOverflow.ellipsis),
-          subtitle: Text('${scheduleText(r)} · $status\n${r.generatedCount} Buchungen erzeugt'),
-          isThreeLine: true,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
           onTap: () => openRuleForm(context, ref, r.id),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AmountText(r.amountCents, row.category.kind),
-              PopupMenuButton<String>(
-                onSelected: (v) async {
-                  switch (v) {
-                    case 'edit':
-                      await openRuleForm(context, ref, r.id);
-                    case 'pause':
-                      await repo.setPaused(r, !r.paused);
-                      if (r.paused) await runDueRecurring(ref.read(dbProvider));
-                    case 'delete':
-                      final ok = await confirm(
-                        context,
-                        title: 'Vorlage löschen?',
-                        message: 'Es werden keine neuen Buchungen mehr erzeugt. Bereits eingetragene Buchungen bleiben erhalten.',
-                      );
-                      if (ok) await repo.deleteRule(r.id);
-                  }
-                },
-                itemBuilder: (_) => [
-                  const PopupMenuItem(value: 'edit', child: Text('Bearbeiten')),
-                  PopupMenuItem(value: 'pause', child: Text(r.paused ? 'Fortsetzen' : 'Pausieren')),
-                  const PopupMenuItem(value: 'delete', child: Text('Löschen')),
-                ],
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 4, 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CategoryAvatar.of(row.category),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              r.note.isEmpty ? row.category.name : r.note,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          AmountText(r.amountCents, row.category.kind),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${scheduleText(r)} · ${r.generatedCount}×\n$status',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.cash.subtle),
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuButton<String>(
+                  onSelected: (v) async {
+                    switch (v) {
+                      case 'edit':
+                        await openRuleForm(context, ref, r.id);
+                      case 'pause':
+                        await repo.setPaused(r, !r.paused);
+                        if (r.paused) await runDueRecurring(ref.read(dbProvider));
+                      case 'delete':
+                        final ok = await confirm(
+                          context,
+                          title: 'Vorlage löschen?',
+                          message: 'Es werden keine neuen Buchungen mehr erzeugt. Bereits eingetragene Buchungen bleiben erhalten.',
+                        );
+                        if (ok) await repo.deleteRule(r.id);
+                    }
+                  },
+                  itemBuilder: (_) => [
+                    const PopupMenuItem(value: 'edit', child: Text('Bearbeiten')),
+                    PopupMenuItem(value: 'pause', child: Text(r.paused ? 'Fortsetzen' : 'Pausieren')),
+                    const PopupMenuItem(value: 'delete', child: Text('Löschen')),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -107,7 +134,8 @@ class _RuleCard extends ConsumerWidget {
 Future<void> openRuleForm(BuildContext context, WidgetRef ref, int ruleId) async {
   final rule = await ref.read(repoProvider).rule(ruleId);
   if (rule == null || !context.mounted) return;
-  await Navigator.of(context).push(MaterialPageRoute<void>(fullscreenDialog: true, builder: (_) => RuleForm(rule: rule)));
+  await Navigator.of(context)
+      .push(MaterialPageRoute<void>(fullscreenDialog: true, builder: (_) => RuleForm(rule: rule)));
 }
 
 /// Edits a recurring rule. Changes apply to future bookings only.
@@ -153,7 +181,9 @@ class _RuleFormState extends ConsumerState<RuleForm> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    await ref.read(repoProvider).updateRule(
+    await ref
+        .read(repoProvider)
+        .updateRule(
           widget.rule,
           categoryId: _categoryId,
           amountCents: parseCents(_amount.text)!,
@@ -187,7 +217,7 @@ class _RuleFormState extends ConsumerState<RuleForm> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
             Card(
               margin: EdgeInsets.zero,
@@ -215,17 +245,22 @@ class _RuleFormState extends ConsumerState<RuleForm> {
                 for (final c in categories)
                   DropdownMenuItem(
                     value: c.id,
-                    child: Row(children: [
-                      CategoryAvatar.of(c, size: 24),
-                      const SizedBox(width: 12),
-                      Text('${c.name} (${c.kind.label})'),
-                    ]),
+                    child: Row(
+                      children: [
+                        CategoryAvatar.of(c, size: 24),
+                        const SizedBox(width: 12),
+                        Text('${c.name} (${c.kind.label})'),
+                      ],
+                    ),
                   ),
               ],
               onChanged: (v) => setState(() => _categoryId = v!),
             ),
             const SizedBox(height: 12),
-            TextFormField(controller: _note, decoration: const InputDecoration(labelText: 'Notiz (optional)')),
+            TextFormField(
+              controller: _note,
+              decoration: const InputDecoration(labelText: 'Notiz (optional)'),
+            ),
             const SizedBox(height: 12),
             Card(
               margin: EdgeInsets.zero,
@@ -245,12 +280,7 @@ class _RuleFormState extends ConsumerState<RuleForm> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'save-rule',
-        onPressed: _save,
-        icon: const Icon(Icons.check),
-        label: const Text('Speichern'),
-      ),
+      bottomNavigationBar: SaveBar(onPressed: _save),
     );
   }
 }
