@@ -1,0 +1,27 @@
+name: Mirror to GitLab
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push main and tags to gitlab.com/CrashBandit82/cashbandit
+        env:
+          TOKEN: ${{ secrets.GITLAB_MIRROR_TOKEN }}
+        run: |
+          auth=$(printf 'oauth2:%s' "$TOKEN" | base64 -w0)
+          git fetch origin main
+          # checkout may create lightweight tags; use the original annotated ones
+          git fetch --force origin 'refs/tags/*:refs/tags/*'
+          git -c http.extraheader="AUTHORIZATION: basic $auth" push \
+            https://gitlab.com/CrashBandit82/cashbandit.git origin/main:refs/heads/main --tags

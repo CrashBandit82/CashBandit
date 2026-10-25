@@ -1,0 +1,14 @@
+<p><b>CashBandit</b> is a simple, colorful cash book for your phone. All data stays on the device: <b>100 % offline</b>, no internet permission, no account, no ads, no trackers. The app is in German.</p>
+
+<p><b>Features</b></p>
+<ul>
+<li>Record income and expenses with amount, date, category and note</li>
+<li>Categories with their own color and icon – fully editable, reorder by drag &amp; drop</li>
+<li>Weekly or monthly overview: balance, stacked bar charts by category, comparison of the last 12 months</li>
+<li>Breakdown by category with percentage</li>
+<li>Booking list grouped by day, filter by period, category, type and search in notes</li>
+<li>Recurring bookings (weekly to yearly), filled in automatically when the app is opened</li>
+<li>App lock with PIN and fingerprint, content hidden in the app switcher</li>
+<li>Backup as JSON (export and import) and export of bookings as CSV</li>
+<li>Light and dark mode</li>
+</ul>

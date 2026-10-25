@@ -1,0 +1,14 @@
+<p><b>CashBandit</b> ist ein einfaches, buntes Kassabuch für dein Handy. Alle Daten bleiben auf dem Gerät: <b>100 % offline</b>, keine Internet-Berechtigung, kein Konto, keine Werbung, keine Tracker.</p>
+
+<p><b>Funktionen</b></p>
+<ul>
+<li>Einnahmen und Ausgaben mit Betrag, Datum, Kategorie und Notiz erfassen</li>
+<li>Kategorien mit eigener Farbe und eigenem Symbol – frei bearbeitbar, sortierbar per Drag &amp; Drop</li>
+<li>Übersicht pro Woche oder Monat: Saldo, gestapelte Balkendiagramme nach Kategorie, Vergleich der letzten 12 Monate</li>
+<li>Aufschlüsselung nach Kategorie mit Anteil in Prozent</li>
+<li>Buchungsliste nach Tagen gruppiert, mit Filter nach Zeitraum, Kategorie, Typ und Suche in Notizen</li>
+<li>Wiederkehrende Buchungen (wöchentlich bis jährlich), werden beim Öffnen der App automatisch nachgetragen</li>
+<li>App-Sperre mit PIN und Fingerabdruck, Inhalt im App-Wechsler ausgeblendet</li>
+<li>Sicherung als JSON (Export und Import) und Export der Buchungen als CSV</li>
+<li>Hell- und Dunkelmodus</li>
+</ul>

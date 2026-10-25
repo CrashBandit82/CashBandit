@@ -1,0 +1,1 @@
+First release: cash book with categories, charts, recurring bookings, app lock and backup.
