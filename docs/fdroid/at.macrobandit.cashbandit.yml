@@ -12,9 +12,9 @@ RepoType: git
 Repo: https://github.com/CrashBandit82/CashBandit.git
 
 Builds:
-  - versionName: 1.0.0
-    versionCode: 1001
-    commit: e98741b421069fbbb6879662d84f22e0f6a99527
+  - versionName: 1.0.1
+    versionCode: 1002
+    commit: 31ac95aeaf6628cb62d3c2b9008c2e1748d3282d
     sudo:
       - apt-get update
       - apt-get install -y clang
@@ -33,9 +33,9 @@ Builds:
       - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm
     ndk: r28c
 
-  - versionName: 1.0.0
-    versionCode: 2001
-    commit: e98741b421069fbbb6879662d84f22e0f6a99527
+  - versionName: 1.0.1
+    versionCode: 2002
+    commit: 31ac95aeaf6628cb62d3c2b9008c2e1748d3282d
     sudo:
       - apt-get update
       - apt-get install -y clang
@@ -54,9 +54,9 @@ Builds:
       - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm64
     ndk: r28c
 
-  - versionName: 1.0.0
-    versionCode: 4001
-    commit: e98741b421069fbbb6879662d84f22e0f6a99527
+  - versionName: 1.0.1
+    versionCode: 4002
+    commit: 31ac95aeaf6628cb62d3c2b9008c2e1748d3282d
     sudo:
       - apt-get update
       - apt-get install -y clang
@@ -82,5 +82,5 @@ VercodeOperation:
   - 2000 + %c
   - 4000 + %c
 UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
-CurrentVersion: 1.0.0
-CurrentVersionCode: 4001
+CurrentVersion: 1.0.1
+CurrentVersionCode: 4002

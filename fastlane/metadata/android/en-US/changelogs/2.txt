@@ -1,4 +1,3 @@
-- Calendar weeks in the overview are now correct across daylight saving time changes
 - Save button in forms no longer covers fields
 - Flatter "Buchung" button no longer covers the chart
 - Tab "Regelmäßig" (instead of the wrapping "Wiederkehrend")

@@ -1,4 +1,3 @@
-- Kalenderwochen in der Übersicht stimmen jetzt auch über die Zeitumstellung hinweg
 - Speichern-Knopf in Formularen verdeckt keine Felder mehr
 - Plus-Knopf „Buchung“ flacher, verdeckt das Diagramm nicht mehr
 - Tab „Regelmäßig“ (statt umbrechendem „Wiederkehrend“)
