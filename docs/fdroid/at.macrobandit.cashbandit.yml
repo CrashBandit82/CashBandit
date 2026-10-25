@@ -1,0 +1,86 @@
+Categories:
+  - Money
+License: GPL-3.0-only
+AuthorName: CrashBandit82
+SourceCode: https://github.com/CrashBandit82/CashBandit
+IssueTracker: https://github.com/CrashBandit82/CashBandit/issues
+Changelog: https://github.com/CrashBandit82/CashBandit/releases
+
+AutoName: CashBandit
+
+RepoType: git
+Repo: https://github.com/CrashBandit82/CashBandit.git
+
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1001
+    commit: a04bbf0cceb2954ac1b0e34cc74c6891978bbcd4
+    sudo:
+      - apt-get update
+      - apt-get install -y clang
+    output: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+    srclibs:
+      - flutter@3.47.7
+    prebuild:
+      - tools/fetch-sqlite.sh
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter config --no-analytics
+      - $$flutter$$/bin/flutter pub get --enforce-lockfile
+    scandelete:
+      - .pub-cache
+    build:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm
+    ndk: r28c
+
+  - versionName: 1.0.0
+    versionCode: 2001
+    commit: a04bbf0cceb2954ac1b0e34cc74c6891978bbcd4
+    sudo:
+      - apt-get update
+      - apt-get install -y clang
+    output: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+    srclibs:
+      - flutter@3.47.7
+    prebuild:
+      - tools/fetch-sqlite.sh
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter config --no-analytics
+      - $$flutter$$/bin/flutter pub get --enforce-lockfile
+    scandelete:
+      - .pub-cache
+    build:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm64
+    ndk: r28c
+
+  - versionName: 1.0.0
+    versionCode: 4001
+    commit: a04bbf0cceb2954ac1b0e34cc74c6891978bbcd4
+    sudo:
+      - apt-get update
+      - apt-get install -y clang
+    output: build/app/outputs/flutter-apk/app-x86_64-release.apk
+    srclibs:
+      - flutter@3.47.7
+    prebuild:
+      - tools/fetch-sqlite.sh
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter config --no-analytics
+      - $$flutter$$/bin/flutter pub get --enforce-lockfile
+    scandelete:
+      - .pub-cache
+    build:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-x64
+    ndk: r28c
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+VercodeOperation:
+  - 1000 + %c
+  - 2000 + %c
+  - 4000 + %c
+UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
+CurrentVersion: 1.0.0
+CurrentVersionCode: 4001
