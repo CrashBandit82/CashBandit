@@ -1,0 +1,1 @@
+- Reproduzierbarer Build für F-Droid (keine Änderung an den Funktionen)

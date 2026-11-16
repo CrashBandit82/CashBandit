@@ -46,9 +46,16 @@ flutter build apk --release --split-per-abi  # kleinere APKs pro CPU-Architektur
    `dart run drift_dev schema dump lib/data/db.dart drift_schemas/drift_schema_vN.json`.
 4. Commit, dann Tag: `git tag -a vX.Y.Z -m "CashBandit X.Y.Z" && git push origin main vX.Y.Z`.
 5. GitHub Actions:
-   - **Release**: Tests, signierte APKs (arm64-v8a, armeabi-v7a, x86_64 + universell) und `SHA256SUMS` im GitHub-Release mit Changelog.
+   - **Release check**: prüft Tag gegen `pubspec.yaml` und lässt die Tests laufen. Baut **keine** APKs mehr.
    - **Mirror**: `main` und Tags nach gitlab.com/CrashBandit82/cashbandit.
-6. F-Droid erkennt neue Tags automatisch (`AutoUpdateMode: Version`, `UpdateCheckMode: Tags`).
+6. Release-APKs (arm64-v8a, armeabi-v7a, x86_64) reproduzierbar in der F-Droid-Bauumgebung bauen
+   (gleiche Pfade, je ABI `flutter build apk --release --split-per-abi --target-platform=…`), lokal signieren und
+   als `cashbandit-vX.Y.Z-<abi>-release.apk` von Hand ins GitHub-Release laden. Nur so kann F-Droid sie bitgleich
+   nachbauen (Reproducible Builds). Die `CASHBANDIT_KEYSTORE_*`-Secrets werden dafür nicht mehr gebraucht.
+   Signieren **nur** mit `apksigner sign --alignment-preserved true …`: ohne die Option richtet apksigner
+   Einträge neu aus, dann passt die Signatur nicht mehr auf F-Droids unsignierte APK.
+   Prüfen: `apksigcopier copy signiert.apk unsigniert.apk kopie.apk && cmp signiert.apk kopie.apk`.
+7. F-Droid erkennt neue Tags automatisch (`AutoUpdateMode: Version`, `UpdateCheckMode: Tags`).
 
 Der Workflow bricht ab, wenn Tag und `pubspec.yaml`-Version nicht übereinstimmen.
 
