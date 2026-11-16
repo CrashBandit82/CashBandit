@@ -36,9 +36,9 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            val store = signingValue("storeFile", "CASHBANDIT_KEYSTORE")
-            if (store != null) {
+        val store = signingValue("storeFile", "CASHBANDIT_KEYSTORE")
+        if (store != null) {
+            create("release") {
                 storeFile = file(store)
                 storePassword = signingValue("storePassword", "CASHBANDIT_KEYSTORE_PASSWORD")
                 keyAlias = signingValue("keyAlias", "CASHBANDIT_KEY_ALIAS")
@@ -49,9 +49,9 @@ android {
 
     buildTypes {
         release {
-            // unsigned when no keystore is configured (e.g. F-Droid signs itself)
-            val release = signingConfigs.getByName("release")
-            signingConfig = if (release.storeFile != null) release else null
+            // unsigned when no keystore is configured (e.g. F-Droid signs itself).
+            // Keep this a single token: F-Droid strips the line and the block above.
+            signingConfig = signingConfigs.findByName("release")
         }
     }
 
