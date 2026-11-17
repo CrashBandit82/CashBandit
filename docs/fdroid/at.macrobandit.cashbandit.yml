@@ -1,5 +1,5 @@
 Categories:
-  - Money
+  - Finance Manager
 License: GPL-3.0-only
 AuthorName: CrashBandit82
 SourceCode: https://github.com/CrashBandit82/CashBandit
@@ -12,13 +12,15 @@ RepoType: git
 Repo: https://github.com/CrashBandit82/CashBandit.git
 
 Builds:
-  - versionName: 1.0.1
-    versionCode: 1002
-    commit: 31ac95aeaf6628cb62d3c2b9008c2e1748d3282d
+  - versionName: 1.0.2
+    versionCode: 1003
+    commit: 7ef52002524312a720f9c5fcc13fd9f072fd64c4
     sudo:
       - apt-get update
       - apt-get install -y clang
     output: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+    binary: 
+      https://github.com/CrashBandit82/CashBandit/releases/download/v%v/cashbandit-v%v-armeabi-v7a-release.apk
     srclibs:
       - flutter@3.47.7
     prebuild:
@@ -33,13 +35,15 @@ Builds:
       - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm
     ndk: r28c
 
-  - versionName: 1.0.1
-    versionCode: 2002
-    commit: 31ac95aeaf6628cb62d3c2b9008c2e1748d3282d
+  - versionName: 1.0.2
+    versionCode: 2003
+    commit: 7ef52002524312a720f9c5fcc13fd9f072fd64c4
     sudo:
       - apt-get update
       - apt-get install -y clang
     output: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+    binary: 
+      https://github.com/CrashBandit82/CashBandit/releases/download/v%v/cashbandit-v%v-arm64-v8a-release.apk
     srclibs:
       - flutter@3.47.7
     prebuild:
@@ -54,13 +58,15 @@ Builds:
       - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm64
     ndk: r28c
 
-  - versionName: 1.0.1
-    versionCode: 4002
-    commit: 31ac95aeaf6628cb62d3c2b9008c2e1748d3282d
+  - versionName: 1.0.2
+    versionCode: 4003
+    commit: 7ef52002524312a720f9c5fcc13fd9f072fd64c4
     sudo:
       - apt-get update
       - apt-get install -y clang
     output: build/app/outputs/flutter-apk/app-x86_64-release.apk
+    binary: 
+      https://github.com/CrashBandit82/CashBandit/releases/download/v%v/cashbandit-v%v-x86_64-release.apk
     srclibs:
       - flutter@3.47.7
     prebuild:
@@ -75,6 +81,8 @@ Builds:
       - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-x64
     ndk: r28c
 
+AllowedAPKSigningKeys: 23a088aa31e2a886ab1277b846580b409b371617de4954c80f1952576a8a32cc
+
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 VercodeOperation:
@@ -82,5 +90,5 @@ VercodeOperation:
   - 2000 + %c
   - 4000 + %c
 UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
-CurrentVersion: 1.0.1
-CurrentVersionCode: 4002
+CurrentVersion: 1.0.2
+CurrentVersionCode: 4003
