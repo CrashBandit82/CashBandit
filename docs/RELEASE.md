@@ -41,7 +41,9 @@ flutter build apk --release --split-per-abi  # kleinere APKs pro CPU-Architektur
 ## Neue Version
 
 1. `pubspec.yaml`: `version: X.Y.Z+N` – `N` (versionCode) **immer** erhöhen.
-2. Changelog: `fastlane/metadata/android/{de-DE,en-US}/changelogs/N.txt`.
+2. Changelog: `fastlane/metadata/android/{de-DE,en-US}/changelogs/N.txt` und dieselbe Datei als
+   `(4000+N).txt` (z. B. `4004.txt`). F-Droid zeigt „Was ist neu“ aus der Datei mit der versionCode der
+   höchsten Split-APK (x86_64 = `4000+N`, siehe unten); `N.txt` allein erscheint dort nicht.
 3. Bei Schemaänderungen: `schemaVersion` in `lib/data/db.dart` erhöhen, Migrationsschritt ergänzen und
    `dart run drift_dev schema dump lib/data/db.dart drift_schemas/drift_schema_vN.json`.
 4. Commit, dann Tag: `git tag -a vX.Y.Z -m "CashBandit X.Y.Z" && git push origin main vX.Y.Z`.
