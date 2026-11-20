@@ -42,8 +42,8 @@ flutter build apk --release --split-per-abi  # kleinere APKs pro CPU-Architektur
 
 1. `pubspec.yaml`: `version: X.Y.Z+N` – `N` (versionCode) **immer** erhöhen.
 2. Changelog: `fastlane/metadata/android/{de-DE,en-US}/changelogs/N.txt` und dieselbe Datei als
-   `(4000+N).txt` (z. B. `4004.txt`). F-Droid zeigt „Was ist neu“ aus der Datei mit der versionCode der
-   höchsten Split-APK (x86_64 = `4000+N`, siehe unten); `N.txt` allein erscheint dort nicht.
+   `(N*10+3).txt` (z. B. `5013.txt` für N = 501). F-Droid zeigt „Was ist neu“ aus der Datei mit der versionCode
+   der höchsten Split-APK (x86_64 = `N*10+3`, siehe unten); `N.txt` allein erscheint dort nicht.
 3. Bei Schemaänderungen: `schemaVersion` in `lib/data/db.dart` erhöhen, Migrationsschritt ergänzen und
    `dart run drift_dev schema dump lib/data/db.dart drift_schemas/drift_schema_vN.json`.
 4. Commit, dann Tag: `git tag -a vX.Y.Z -m "CashBandit X.Y.Z" && git push origin main vX.Y.Z`.
@@ -63,4 +63,12 @@ Der Workflow bricht ab, wenn Tag und `pubspec.yaml`-Version nicht übereinstimme
 
 ## versionCode bei Split-APKs
 
-Flutter addiert bei `--split-per-abi` 1000 × ABI: armeabi-v7a `1000+N`, arm64-v8a `2000+N`, x86_64 `4000+N`. Die universelle APK hat `N`. Wer einmal eine Split-APK installiert hat, kann die universelle derselben Version nicht darüber installieren (Downgrade) – beim Testen immer dieselbe Art verwenden.
+Seit 1.0.3 (Wunsch der F-Droid-Reviewer) setzt `android/app/build.gradle.kts` bei `--split-per-abi`
+`N × 10 + ABI`: armeabi-v7a `N*10+1`, arm64-v8a `N*10+2`, x86_64 `N*10+3`. So hat eine neuere Version immer
+die höhere Nummer. Bis 1.0.2 galt Flutters Vorgabe `1000 × ABI + N` (1003/2003/4003), deshalb springt `N`
+mit 1.0.3 einmalig auf 500 (5001/5002/5003) – sonst wäre das Update ein Downgrade. Die universelle APK hat `N`.
+Wer einmal eine Split-APK installiert hat, kann die universelle derselben Version nicht darüber installieren
+(Downgrade) – beim Testen immer dieselbe Art verwenden.
+
+Die Flutter-Version steht in `.github/workflows/release.yml` (`flutter-version`); das F-Droid-Rezept liest sie
+von dort. Bei einem Flutter-Wechsel `release.yml` und `ci.yml` gemeinsam ändern.
