@@ -12,9 +12,9 @@ RepoType: git
 Repo: https://github.com/CrashBandit82/CashBandit.git
 
 Builds:
-  - versionName: 1.0.2
-    versionCode: 1003
-    commit: 7ef52002524312a720f9c5fcc13fd9f072fd64c4
+  - versionName: 1.0.3
+    versionCode: 5001
+    commit: e4ea22a4b8a2edb63a956175dae32b745aee86a1
     sudo:
       - apt-get update
       - apt-get install -y clang
@@ -22,8 +22,11 @@ Builds:
     binary: 
       https://github.com/CrashBandit82/CashBandit/releases/download/v%v/cashbandit-v%v-armeabi-v7a-release.apk
     srclibs:
-      - flutter@3.47.7
+      - flutter@stable
     prebuild:
+      - flutterVersion=$(sed -n -E 's/.*flutter-version:\ "(.*)"/\1/p' .github/workflows/release.yml)
+      - '[[ $flutterVersion ]]'
+      - git -C $$flutter$$ checkout -f $flutterVersion
       - tools/fetch-sqlite.sh
       - export PUB_CACHE=$(pwd)/.pub-cache
       - $$flutter$$/bin/flutter config --no-analytics
@@ -35,9 +38,9 @@ Builds:
       - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm
     ndk: r28c
 
-  - versionName: 1.0.2
-    versionCode: 2003
-    commit: 7ef52002524312a720f9c5fcc13fd9f072fd64c4
+  - versionName: 1.0.3
+    versionCode: 5002
+    commit: e4ea22a4b8a2edb63a956175dae32b745aee86a1
     sudo:
       - apt-get update
       - apt-get install -y clang
@@ -45,8 +48,11 @@ Builds:
     binary: 
       https://github.com/CrashBandit82/CashBandit/releases/download/v%v/cashbandit-v%v-arm64-v8a-release.apk
     srclibs:
-      - flutter@3.47.7
+      - flutter@stable
     prebuild:
+      - flutterVersion=$(sed -n -E 's/.*flutter-version:\ "(.*)"/\1/p' .github/workflows/release.yml)
+      - '[[ $flutterVersion ]]'
+      - git -C $$flutter$$ checkout -f $flutterVersion
       - tools/fetch-sqlite.sh
       - export PUB_CACHE=$(pwd)/.pub-cache
       - $$flutter$$/bin/flutter config --no-analytics
@@ -58,9 +64,9 @@ Builds:
       - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm64
     ndk: r28c
 
-  - versionName: 1.0.2
-    versionCode: 4003
-    commit: 7ef52002524312a720f9c5fcc13fd9f072fd64c4
+  - versionName: 1.0.3
+    versionCode: 5003
+    commit: e4ea22a4b8a2edb63a956175dae32b745aee86a1
     sudo:
       - apt-get update
       - apt-get install -y clang
@@ -68,8 +74,11 @@ Builds:
     binary: 
       https://github.com/CrashBandit82/CashBandit/releases/download/v%v/cashbandit-v%v-x86_64-release.apk
     srclibs:
-      - flutter@3.47.7
+      - flutter@stable
     prebuild:
+      - flutterVersion=$(sed -n -E 's/.*flutter-version:\ "(.*)"/\1/p' .github/workflows/release.yml)
+      - '[[ $flutterVersion ]]'
+      - git -C $$flutter$$ checkout -f $flutterVersion
       - tools/fetch-sqlite.sh
       - export PUB_CACHE=$(pwd)/.pub-cache
       - $$flutter$$/bin/flutter config --no-analytics
@@ -86,9 +95,9 @@ AllowedAPKSigningKeys: 23a088aa31e2a886ab1277b846580b409b371617de4954c80f1952576
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 VercodeOperation:
-  - 1000 + %c
-  - 2000 + %c
-  - 4000 + %c
+  - '%c * 10 + 1'
+  - '%c * 10 + 2'
+  - '%c * 10 + 3'
 UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
-CurrentVersion: 1.0.2
-CurrentVersionCode: 4003
+CurrentVersion: 1.0.3
+CurrentVersionCode: 5003
