@@ -26,7 +26,6 @@ GitHub → *Settings → Secrets and variables → Actions*:
 | `CASHBANDIT_KEYSTORE_PASSWORD` | Store-Passwort |
 | `CASHBANDIT_KEY_ALIAS` | `cashbandit` |
 | `CASHBANDIT_KEY_PASSWORD` | Key-Passwort |
-| `GITLAB_MIRROR_TOKEN` | GitLab-Projekt-Token (write_repository) für den Spiegel |
 
 ## Release-APK lokal bauen
 
@@ -49,7 +48,6 @@ flutter build apk --release --split-per-abi  # kleinere APKs pro CPU-Architektur
 4. Commit, dann Tag: `git tag -a vX.Y.Z -m "CashBandit X.Y.Z" && git push origin main vX.Y.Z`.
 5. GitHub Actions:
    - **Release check**: prüft Tag gegen `pubspec.yaml` und lässt die Tests laufen. Baut **keine** APKs mehr.
-   - **Mirror**: `main` und Tags nach gitlab.com/CrashBandit82/cashbandit.
 6. Release-APKs (arm64-v8a, armeabi-v7a, x86_64) reproduzierbar in der F-Droid-Bauumgebung bauen
    (gleiche Pfade, je ABI `flutter build apk --release --split-per-abi --target-platform=…`), lokal signieren und
    als `cashbandit-vX.Y.Z-<abi>-release.apk` von Hand ins GitHub-Release laden. Nur so kann F-Droid sie bitgleich
